@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="SomarWSService"
+	targetNamespace="http://ws.calculadorapedro.com.br/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://ws.calculadorapedro.com.br/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+	
+	<!-- tipos que o webservice ira suportar. registra os XSDs a serem levados em consideração pelo WSDL-->
+	<wsdl:types>
+		<schema xmlns="http://www.w3.org/2001/XMLSchema">
+			<import namespace="http://ws.calculadorapedro.com.br/"
+				schemaLocation="somarws_schema1.xsd" /> <!-- importacao do nosso schema, suportando todos os elementos xsd -->
+		</schema>
+	</wsdl:types>
+	
+	<wsdl:message name="somar">
+		<wsdl:part name="parameters" element="tns:somar">
+		</wsdl:part>
+	</wsdl:message>
+	
+	<!-- sistema de tipagem mapeado no nosso xsd / elementos que serao trafegados no nosso webservice -->
+	<wsdl:message name="somarResponse">
+		<wsdl:part name="parameters" element="tns:somarResponse"> <!-- tns foi importado para o mapeamento da nossa propria aplicacao -->
+		</wsdl:part>
+	</wsdl:message>
+	
+	
+	<!-- conjunto de operacoes que serao expostas (funcao que o webservice ira executar), paramentros de entrada e saida input/output -->
+	<wsdl:portType name="SomarWSEndpoint">
+		<wsdl:operation name="somar"> <!-- funcao que o webservice ira executar -->
+			<wsdl:input name="somar" message="tns:somar"> <!-- tns:somar foi mapeado na tag message acima -->
+			</wsdl:input>
+			<wsdl:output name="somarResponse"
+				message="tns:somarResponse">
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+	
+	<!-- Liga um conjunto de operacoes (porttype) a um protocolo, expondo como o porttype sera exibido na rede para serem consumidos (exposto)-->
+	<wsdl:binding name="SomarWSServiceSoapBinding"
+		type="tns:SomarWSEndpoint"> <!-- nosso port type -->
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" /> <!-- requisicao soap de invocacao http -->
+		<wsdl:operation name="somar">
+			<soap:operation soapAction="urn:Somar"
+				style="document" /> <!-- style document obriga a validacao via xsd -->
+			<wsdl:input name="somar">
+				<soap:body use="literal" /> <!-- use=literal obriga que o serviço seja exposto fielmente como esta no portType -->
+			</wsdl:input>
+			<wsdl:output name="somarResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+
+	<!-- Informacoes do servico (localizacao) registra a maneira como a exposição de um serviço deve ser feita na rede -->
+	<wsdl:service name="SomarWSService">
+		<wsdl:port name="SomarWSPort"
+			binding="tns:SomarWSServiceSoapBinding"> <!-- Ligacao ao binding -->
+			<soap:address
+				location="http://localhost:9090/SomarWSPort" /> <!-- endereco do servico -->
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
